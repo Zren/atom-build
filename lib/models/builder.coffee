@@ -5,8 +5,8 @@ class Builder
   Emitter.includeInto(this)
 
   gammarScopeNameBuildScripts:
-    'source.coffee': '../../build-scripts/coffeescript'
-    'source.js': '../../build-scripts/nodejs'
+    'source.coffee': '../../build-scripts/coffeescript.coffee'
+    'source.js': '../../build-scripts/nodejs.coffee'
 
   build: ->
     console.log('Builder: build')
