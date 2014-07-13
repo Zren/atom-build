@@ -11,6 +11,7 @@ module.exports =
       # Paths are relative to ./libs/models/builder.coffee
       grammar:
         source:
+          'c++': buildScriptsDir + 'source.c++.coffee'
           coffee: buildScriptsDir + 'source.coffee.coffee'
           js: buildScriptsDir + 'source.js.coffee'
           java: buildScriptsDir + 'source.java.coffee'

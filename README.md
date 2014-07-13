@@ -2,35 +2,43 @@
 
 Automatically build your project inside your new favorite editor, Atom.
 
-  * `alt-cmd-b` builds your project
+  * `ctrl-b` builds your project
   * `escape` terminates build
 
-![work work](http://noseglid.github.io/atom-build.gif)
+![](https://i.imgur.com/RJM6SQ8.gif)
 
-Supported build tools:
+## Configuration
 
-  * [NodeJS](http://nodejs.org) (runs `npm install`) - if `package.json` exists where `engines['node']` is set
-  * [Atom](http://atom.io) (runs `apm install`) - if `package.json` exists where `engines['atom']` is set
-  * [Grunt](http://gruntjs.com/) - if `Gruntfile.js` exists
-  * [GNU Make](https://www.gnu.org/software/make/) - if `Makefile` exists
+![](https://i.imgur.com/aQn8KWd.png)
 
-If multiple viable build options are found, `atom-build` will
-prioritise according to the list above. For instance, if `package.json` and
-`Gruntfile.js` are both available in the root folder, `npm install` will be
-executed by `atom-build`.
+### Example Build Script
 
-If you need to run `grunt` to build you project,
-utilize the [postinstall-script](https://www.npmjs.org/doc/misc/npm-scripts.html) of
-package.json. This will also help you if grunt is run as a node module since it
-will be downloaded (via `npm install`) prior.
+```coffeescript
+module.exports = ->
+  path = require 'path'
+  uri = atom.workspace.getActiveEditor().getUri()
 
-You can set the arguments and environment in settings:
+  # SublimeText variables
+  file = uri
+  file_name = path.basename(uri)
+  file_path = path.dirname(uri)
+  file_extension = path.extname(file_name)
+  file_base_name = file_name.substring(0, file_name.length - file_extension.length)
+  file_extension = file_extension?.substring(1)
 
-  * `arguments` The argument line to the build tool invocation. These will simply be appended.
-  * `environment` The environment to set for the build tool. Use `=`-separated key/values: `MOOD=EXCELLENT INTOXICATION=MEDIUM`
+  return [
+    {
+      command: 'node'
+      args: [file]
+    }
+  ]
+```
 
-These settings are global for all projects, so currently you have to change them
-when you switch project if you require different parameters for different projects.
-You could use a package such as [project-switcher](https://atom.io/packages/project-switcher) or
-[project-manager](https://atom.io/packages/project-manager) for saving and restoring
-project specific settings.
+
+### Default Build Scripts
+
+  * **C++:** `g++ $file -o $file_path\$file_base_name`
+  * **Coffeescript:** `node %APPDATA%\npm\node_modules\coffee-script\bin\coffee $file`
+  * **Java:** `javac $file`, `java $file_base_name`
+  * **Javascript:** `node $file`
+  * **Python:** `python $file`
