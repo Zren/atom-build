@@ -1,3 +1,4 @@
+{$} = require 'atom'
 {Emitter} = require atom.packages.resourcePath + '/node_modules/emissary'
 consoleCommand = require '../console-command'
 OutputView = require '../views/output-view'
@@ -27,7 +28,8 @@ class Build
   runCurrentCommand: ->
     console.log('Build: runCurrentCommand')
     console.log('Build: currentCommand: ', @currentCommand)
-    @output(@currentCommand.command + ' ' + @currentCommand.args.join(' ') + '\n')
+    commandLine = @currentCommand.command + ' ' + @currentCommand.args.join(' ')
+    @output(commandLine + '\n')
     @currentProccess = consoleCommand
       command: @currentCommand.command
       args: @currentCommand.args

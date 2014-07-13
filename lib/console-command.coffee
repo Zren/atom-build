@@ -29,17 +29,9 @@ getSubmodule = (path) ->
 command = ({command, args, options, stdout, stderr, exit}={}) ->
   options ?= {}
   options.cwd ?= dir()
+  options.stdio ?= ['ignore', 'pipe', 'pipe']
 
   stderr ?= (data) -> new StatusView(type: 'alert', message: data.toString())
-
-  if stdout? and not exit?
-    c_stdout = stdout
-    stdout = (data) ->
-      @save ?= ''
-      @save += data
-    exit = (exit) ->
-      c_stdout @save ?= ''
-      @save = null
 
   new BufferedProcess
     command: command

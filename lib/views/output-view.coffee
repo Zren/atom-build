@@ -5,8 +5,6 @@ module.exports =
   class OutputView extends ScrollView
     Subscriber.includeInto (this)
 
-    message: ''
-
     @content: ->
       @div class: 'info-view', =>
         @pre class: 'output', outlet: 'output'
@@ -17,13 +15,12 @@ module.exports =
       @subscribe $(window), 'core:cancel', => @detach()
 
     addLine: (line) ->
-      @message += line
-      @output.text(line)
+      @output.append(line)
       @output[0].scrollTop = @output[0].scrollHeight
 
 
     reset: ->
-      @message = ''
+      @output.text('')
 
     finish: ->
       setTimeout =>
