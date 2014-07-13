@@ -26,7 +26,13 @@ class Builder
 
     buildScriptPath = buildModule.getBuildScriptPathByGrammar(grammarScopeName)
     return unless buildScriptPath
+    buildScriptPath = require('path').resolve(buildScriptPath)
     console.log buildScriptPath
+
+    # Delete the script from the module cache.
+    # This allows the user to edit the script without reloading Atom.
+    delete require.cache[buildScriptPath]
+    delete require('module')._cache[buildScriptPath]
 
     script = require buildScriptPath
     commands = script()

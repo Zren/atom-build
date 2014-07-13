@@ -31,7 +31,11 @@ class GrammarsPanel extends ScrollView
       gammarElement.find('.build-script-path').on 'change', ->
         grammarScopeName = gammarElement.data('scope-name')
         grammarBuildScriptPath = @.value
+        if grammarBuildScriptPath
+          grammarBuildScriptPath = require('path').resolve(grammarBuildScriptPath)
+          @.value = grammarBuildScriptPath
         buildModule.setBuildScriptPathByGrammar(grammarScopeName, grammarBuildScriptPath)
+
       gammarElement.find('.edit-btn').on 'click', ->
         grammarScopeName = gammarElement.data('scope-name')
         buildPackage = atom.packages.getActivePackage('build')
