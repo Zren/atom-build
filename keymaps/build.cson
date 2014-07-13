@@ -1,5 +1,5 @@
-'.platform-darwin':
-  'alt-cmd-b': 'build:trigger'
+'html body.platform-win32':
+  'ctrl-b': 'build:run'
 
 '.build':
   'escape': 'build:stop'

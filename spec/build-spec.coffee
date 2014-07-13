@@ -33,7 +33,7 @@ describe "Build", ->
     it "should not show the build window if no buildfile exists", ->
       expect(atom.workspaceView.find('.build')).not.toExist()
 
-      atom.workspaceView.trigger 'build:trigger'
+      atom.workspaceView.trigger 'build:run'
 
       waitsForPromise ->
         atom.workspaceView.open()
@@ -45,7 +45,7 @@ describe "Build", ->
       expect(atom.workspaceView.find('.build')).not.toExist()
 
       fs.writeFileSync(makefile, fs.readFileSync(goodMakefile));
-      atom.workspaceView.trigger 'build:trigger'
+      atom.workspaceView.trigger 'build:run'
 
       waitsFor ->
         atom.workspaceView.find('.build .title').hasClass('success')
@@ -58,7 +58,7 @@ describe "Build", ->
       expect(atom.workspaceView.find('.build')).not.toExist()
 
       fs.writeFileSync(makefile, fs.readFileSync(badMakefile));
-      atom.workspaceView.trigger 'build:trigger'
+      atom.workspaceView.trigger 'build:run'
 
       waitsFor ->
         atom.workspaceView.find('.build .title').hasClass('error')
@@ -71,7 +71,7 @@ describe "Build", ->
       expect(atom.workspaceView.find('.build')).not.toExist()
 
       fs.writeFileSync(makefile, fs.readFileSync(longMakefile));
-      atom.workspaceView.trigger 'build:trigger'
+      atom.workspaceView.trigger 'build:run'
 
       # Let build run for one second before we terminate it
       waits 1000
@@ -97,7 +97,7 @@ describe "Build", ->
       expect(atom.workspaceView.find('.build')).not.toExist()
 
       fs.writeFileSync(gruntfile, fs.readFileSync(goodGruntfile));
-      atom.workspaceView.trigger 'build:trigger'
+      atom.workspaceView.trigger 'build:run'
 
       waitsFor ->
         atom.workspaceView.find('.build .title').hasClass('success')
@@ -111,7 +111,7 @@ describe "Build", ->
       expect(atom.workspaceView.find('.build')).not.toExist()
 
       fs.writeFileSync(pkgjsonfile, fs.readFileSync(goodNodefile));
-      atom.workspaceView.trigger 'build:trigger'
+      atom.workspaceView.trigger 'build:run'
 
       waitsFor ->
         atom.workspaceView.find('.build .title').hasClass('success')
@@ -126,7 +126,7 @@ describe "Build", ->
       expect(atom.workspaceView.find('.build')).not.toExist()
 
       fs.writeFileSync(pkgjsonfile, fs.readFileSync(goodAtomfile))
-      atom.workspaceView.trigger 'build:trigger'
+      atom.workspaceView.trigger 'build:run'
 
       waitsFor (-> atom.workspaceView.find('.build .title').hasClass('success')),
         "build to be successful", 10000
@@ -141,7 +141,7 @@ describe "Build", ->
 
       fs.writeFileSync(gruntfile, fs.readFileSync(goodGruntfile));
       fs.writeFileSync(makefile, fs.readFileSync(goodMakefile));
-      atom.workspaceView.trigger 'build:trigger'
+      atom.workspaceView.trigger 'build:run'
 
       waitsFor ->
         atom.workspaceView.find('.build .title').hasClass('success')
@@ -155,7 +155,7 @@ describe "Build", ->
 
       fs.writeFileSync(gruntfile, fs.readFileSync(goodGruntfile));
       fs.writeFileSync(pkgjsonfile, fs.readFileSync(goodNodefile));
-      atom.workspaceView.trigger 'build:trigger'
+      atom.workspaceView.trigger 'build:run'
 
       waitsFor ->
         atom.workspaceView.find('.build .title').hasClass('success')
@@ -170,7 +170,7 @@ describe "Build", ->
 
       fs.writeFileSync(gruntfile, fs.readFileSync(goodGruntfile));
       fs.writeFileSync(pkgjsonfile, fs.readFileSync(goodAtomfile));
-      atom.workspaceView.trigger 'build:trigger'
+      atom.workspaceView.trigger 'build:run'
 
       waitsFor (-> atom.workspaceView.find('.build .title').hasClass('success')),
         "build to be successful", 10000
