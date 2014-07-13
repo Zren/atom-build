@@ -1,9 +1,9 @@
-child_process = require 'child_process'
-fs = require 'fs'
-qs = require 'querystring'
-_ = require 'underscore'
+child_process = null
+fs = null
+qs = null
+_ = null
 
-BuildView = require './build-view'
+BuildView = null
 
 module.exports =
   configDefaults:
@@ -17,7 +17,6 @@ module.exports =
     process.env.PATH += ':/usr/local/bin'
 
     @root = atom.project.getPath()
-    @buildView = new BuildView()
     atom.workspaceView.command "build:trigger", => @build()
     atom.workspaceView.command "build:stop", => @stop()
 
@@ -25,6 +24,7 @@ module.exports =
     @child.kill('SIGKILL') if @child
 
   buildCommand: ->
+    fs ?= require 'fs'
     if fs.existsSync @root + '/package.json'
       pkg = require(@root + '/package.json')
       exec = 'apm' if pkg.engines.atom
@@ -51,10 +51,18 @@ module.exports =
     cmd = @buildCommand()
     return if !cmd.exec
 
+
+    BuildView ?= require './build-view'
+    @buildView ?= new BuildView()
+
+    qs ?= require 'querystring'
+    _ ?= require 'underscore'
+
     cargs = (atom.config.get('build.arguments').split(' ')).filter((e) -> '' != e)
     env = _.extend(process.env, (qs.parse (atom.config.get 'build.environment'), ' '))
     args = cmd.args.concat(cargs)
 
+    child_process ?= require 'child_process'
     @child = child_process.spawn(cmd.exec, args, { cwd : @root, env: env })
     @child.stdout.on 'data', @buildView.append
     @child.stderr.on 'data', @buildView.append
@@ -83,6 +91,6 @@ module.exports =
   stop: ->
     if @child
       @abort()
-      @buildView.buildAborted()
+      @buildView?.buildAborted()
     else
-      @buildView.reset()
+      @buildView?.reset()
