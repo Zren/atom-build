@@ -13,6 +13,7 @@ module.exports =
         source:
           coffee: buildScriptsDir + 'source.coffee.coffee'
           js: buildScriptsDir + 'source.js.coffee'
+          java: buildScriptsDir + 'source.java.coffee'
           python: buildScriptsDir + 'source.python.coffee'
 
   builder: null

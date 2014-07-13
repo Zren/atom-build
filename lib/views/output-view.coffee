@@ -9,7 +9,7 @@ module.exports =
 
     @content: ->
       @div class: 'info-view', =>
-        @pre class: 'output'
+        @pre class: 'output', outlet: 'output'
 
     initialize: ->
       super
@@ -18,12 +18,14 @@ module.exports =
 
     addLine: (line) ->
       @message += line
+      @output.text(line)
+      @output[0].scrollTop = @output[0].scrollHeight
+
 
     reset: ->
       @message = ''
 
     finish: ->
-      @find(".output").append(@message)
       setTimeout =>
         @detach()
       , 10000

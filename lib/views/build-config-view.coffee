@@ -27,26 +27,30 @@ class GrammarsPanel extends ScrollView
     @populate()
 
     @find('.grammar').each ->
-      gammarElement = $(@)
-      gammarElement.find('.build-script-path').on 'change', ->
-        grammarScopeName = gammarElement.data('scope-name')
+      grammarElement = $(@)
+      grammarElement.find('.build-script-path').on 'change', ->
+        grammarScopeName = grammarElement.data('scope-name')
         grammarBuildScriptPath = @.value
         if grammarBuildScriptPath
           grammarBuildScriptPath = require('path').resolve(grammarBuildScriptPath)
           @.value = grammarBuildScriptPath
         buildModule.setBuildScriptPathByGrammar(grammarScopeName, grammarBuildScriptPath)
 
-      gammarElement.find('.edit-btn').on 'click', ->
-        grammarScopeName = gammarElement.data('scope-name')
-        buildPackage = atom.packages.getActivePackage('build')
-        buildScriptPath = userBuildScriptsDir + grammarScopeName + '.coffee'
-        gammarElement.find('.build-script-path').attr('value', buildScriptPath).trigger('change')
+      grammarElement.find('.edit-btn').on 'click', ->
+        buildScriptPathElement = grammarElement.find('.build-script-path')
+        buildScriptPath = buildScriptPathElement[0].value
+        newScript = false
+        unless buildScriptPath
+          newScript = true
+          grammarScopeName = grammarElement.data('scope-name')
+          buildScriptPath = userBuildScriptsDir + grammarScopeName + '.coffee'
+          buildScriptPathElement.attr('value', buildScriptPath).trigger('change')
         atom.workspaceView.open(buildScriptPath).done (editor) ->
-          buildPackage = atom.packages.getActivePackage('build')
-          templateBuildScriptPath = buildPackage.path + '/build-scripts/_template.coffee'
-          fs.readFile templateBuildScriptPath, (err, data) ->
-            unless err
-              editor.setText(data.toString())
+          if newScript
+            templateBuildScriptPath = buildScriptsDir + '/_template.coffee'
+            fs.readFile templateBuildScriptPath, (err, data) ->
+              unless err
+                editor.setText(data.toString())
 
   populate: ->
     grammars = atom.syntax.getGrammars()

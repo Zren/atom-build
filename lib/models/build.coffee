@@ -27,10 +27,11 @@ class Build
   runCurrentCommand: ->
     console.log('Build: runCurrentCommand')
     console.log('Build: currentCommand: ', @currentCommand)
-    @output(@currentCommand.command + ' ' + @currentCommand.args + '\n')
+    @output(@currentCommand.command + ' ' + @currentCommand.args.join(' ') + '\n')
     @currentProccess = consoleCommand
       command: @currentCommand.command
       args: @currentCommand.args
+      options: @currentCommand.options
       stdout: (data) =>
         if data
           console.log('Build: stdout: ', data)
@@ -47,6 +48,8 @@ class Build
   commandDone: (code) ->
     console.log('Build: commandDone(#{code}): ', @currentCommand)
     @currentProccess = null
+    if code > 0
+      @kill()
     @nextCommand()
     if @currentCommandIndex >= @commands.length or @killed
       @finish()
@@ -55,10 +58,12 @@ class Build
 
   finish: ->
     console.log('Build: finish')
-    @view.finish()
+    @view?.finish()
 
   kill: ->
     @killed = true
     @currentProccess?.kill()
+    @view?.finish()
+
 
 module.exports = Build
