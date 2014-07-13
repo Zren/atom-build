@@ -1,12 +1,10 @@
 {Emitter} = require atom.packages.resourcePath + '/node_modules/emissary'
 Build = require './build'
 
+buildModule = require '../main'
+
 class Builder
   Emitter.includeInto(this)
-
-  gammarScopeNameBuildScripts:
-    'source.coffee': '../../build-scripts/coffeescript.coffee'
-    'source.js': '../../build-scripts/nodejs.coffee'
 
   build: ->
     console.log('Builder: build')
@@ -23,10 +21,10 @@ class Builder
     return unless editor
 
     grammar = editor.getGrammar()
-    scopeName = grammar.scopeName
-    console.log scopeName
+    grammarScopeName = grammar.scopeName
+    console.log grammarScopeName
 
-    buildScriptPath = @gammarScopeNameBuildScripts[scopeName]
+    buildScriptPath = buildModule.getBuildScriptPathByGrammar(grammarScopeName)
     return unless buildScriptPath
     console.log buildScriptPath
 

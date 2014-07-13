@@ -8,7 +8,7 @@ class Build
   constructor: (@name) ->
     @commands = []
     @currentCommandIndex = -1
-    @kill = false
+    @killed = false
 
   nextCommand: ->
     console.log('Build: nextCommand')
@@ -48,7 +48,7 @@ class Build
     console.log('Build: commandDone(#{code}): ', @currentCommand)
     @currentProccess = null
     @nextCommand()
-    if @currentCommandIndex >= @commands.length or @kill
+    if @currentCommandIndex >= @commands.length or @killed
       @finish()
     else
       @runCurrentCommand()
@@ -58,7 +58,7 @@ class Build
     @view.finish()
 
   kill: ->
-    @kill = true
+    @killed = true
     @currentProccess?.kill()
 
 module.exports = Build

@@ -1,13 +1,38 @@
 BuildConfigView = null
 
 buildConfigUri = 'atom://buildconfig'
+buildPackageDir = atom.packages.getLoadedPackage('build').path
+buildScriptsDir = buildPackageDir + '/build-scripts/'
+userBuildScriptsDir = buildScriptsDir + 'user/'
 
 module.exports =
   configDefaults:
-    environment: ""
-    arguments: ""
+    buildScripts:
+      # Paths are relative to ./libs/models/builder.coffee
+      grammar:
+        source:
+          coffee: buildScriptsDir + 'source.coffee.coffee'
+          js: buildScriptsDir + 'source.js.coffee'
+          python: buildScriptsDir + 'source.python.coffee'
 
   builder: null
+  buildScriptsDir: buildScriptsDir
+  userBuildScriptsDir: userBuildScriptsDir
+
+  getBuildScriptPathByGrammarKey: (grammarScopeName) ->
+    return 'build.buildScripts.grammar.' + grammarScopeName
+
+  getDefaultBuildScriptPathByGrammar: (grammarScopeName) ->
+    key = @getBuildScriptPathByGrammarKey(grammarScopeName)
+    return atom.config.getDefault key
+
+  getBuildScriptPathByGrammar: (grammarScopeName) ->
+    key = @getBuildScriptPathByGrammarKey(grammarScopeName)
+    return atom.config.get key
+
+  setBuildScriptPathByGrammar: (grammarScopeName, buildScriptPath) ->
+    key = @getBuildScriptPathByGrammarKey(grammarScopeName)
+    atom.config.set key, buildScriptPath
 
   activate: (state) ->
     Builder = require './models/builder'

@@ -2,27 +2,45 @@
 PageView = require './page-view'
 fs = require 'fs'
 
+buildModule = require '../main'
+{buildScriptsDir, userBuildScriptsDir} = buildModule
+
 class GrammarsPanel extends ScrollView
   @content: (params) ->
     @div =>
-      @h1 class: 'block section-heading icon icon-gear', 'Grammars'
-      @div class: 'container', outlet: 'grammarSection'
+      @h1 class: 'block section-heading', =>
+        @text 'Build Scripts '
+        @small 'by Grammar'
+      @p =>
+        @text 'Scripts are javasciprt or coffeescript modules. '
+        @code 'module.exports'
+        @text ' should contain a function that returns an array of '
+        @code '{command: "node", args: [atom.workspace.getActiveView().getUri()]}'
+      @p =>
+        @text 'Press Edit next to any input field to generate a new script in '
+        @code userBuildScriptsDir
+        @text '.'
+      @div class: 'container-fluid', outlet: 'grammarSection'
 
   initialize: ->
     super
     @populate()
 
     @find('.grammar').each ->
-      $(@).find('.edit-btn').on 'click', =>
-        grammarScopeName = $(@).data('scope-name')
+      gammarElement = $(@)
+      gammarElement.find('.build-script-path').on 'change', ->
+        grammarScopeName = gammarElement.data('scope-name')
+        grammarBuildScriptPath = @.value
+        buildModule.setBuildScriptPathByGrammar(grammarScopeName, grammarBuildScriptPath)
+      gammarElement.find('.edit-btn').on 'click', ->
+        grammarScopeName = gammarElement.data('scope-name')
         buildPackage = atom.packages.getActivePackage('build')
-        buildScriptPath = buildPackage.path + '/build-scripts/' + grammarScopeName + '.coffee'
-        $(@).find('.build-script-path').attr('value', buildScriptPath)
+        buildScriptPath = userBuildScriptsDir + grammarScopeName + '.coffee'
+        gammarElement.find('.build-script-path').attr('value', buildScriptPath).trigger('change')
         atom.workspaceView.open(buildScriptPath).done (editor) ->
           buildPackage = atom.packages.getActivePackage('build')
           templateBuildScriptPath = buildPackage.path + '/build-scripts/_template.coffee'
           fs.readFile templateBuildScriptPath, (err, data) ->
-            console.log err, data
             unless err
               editor.setText(data.toString())
 
@@ -42,19 +60,21 @@ appendGrammars = (grammars) ->
       appendGrammar.call this, grammar
 
 appendGrammar = (grammar) ->
-  buildModule = atom.packages.getActivePackage('build')?.mainModule
-  builder = buildModule?.builder
-  grammarBuildScriptPath = builder?.gammarScopeNameBuildScripts[grammar.scopeName]
+  grammarBuildScriptPath = buildModule.getBuildScriptPathByGrammar(grammar.scopeName)
   grammarBuildScriptPath ?= ''
-  # console.log grammar.name, grammarBuildScriptPath
+  defaultGrammarBuildScriptPath = buildModule.getDefaultBuildScriptPathByGrammar(grammar.scopeName)
+  defaultGrammarBuildScriptPath ?= ''
+  if grammarBuildScriptPath is defaultGrammarBuildScriptPath
+    grammarBuildScriptPath = ''
 
   @div class: 'grammar row form-horizontal', 'data-scope-name': grammar.scopeName, =>
     @label class: 'col-xs-3 control-label', grammar.name
     @div class: 'col-xs-9', =>
       @div class: 'input-group', =>
-        @input class: 'form-control build-script-path', type: 'text', value: grammarBuildScriptPath
+
+        @input class: 'form-control build-script-path', type: 'text', value: grammarBuildScriptPath, placeholder: defaultGrammarBuildScriptPath
         @div class: 'input-group-btn', =>
-          @button class: 'btn btn-default icon icon-file edit-btn', type: 'button', 'Edit'
+          @button class: 'btn btn-primary icon icon-file edit-btn', type: 'button', 'Edit'
 
 
 class BuilderConfigView extends PageView
@@ -63,7 +83,7 @@ class BuilderConfigView extends PageView
     @title = 'Build Config'
     @iconName = 'tools'
 
-    @addClass 'settings-view'
+    @addClass 'build-config-view'
 
 
   initializePanels: ->
